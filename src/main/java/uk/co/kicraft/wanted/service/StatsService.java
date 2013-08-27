@@ -2,5 +2,5 @@ package uk.co.kicraft.wanted.service;
 
 public interface StatsService {
 
-	public void saveDeath(String player, String killer);
+	public int saveDeath(String player, String cause, String killer);
 }

@@ -3,9 +3,12 @@ package uk.co.kicraft.wanted;
 import java.io.File;
 import java.util.logging.Logger;
 
+import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Wanted extends JavaPlugin {
@@ -29,28 +32,43 @@ public class Wanted extends JavaPlugin {
 			saveConfig();
 		}
 
+		if (!setupEconomy()) {
+			log.severe(String.format(
+					"[%s] - Disabled due to no Vault dependency found!",
+					getDescription().getName()));
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
+		setupPermissions();
+        setupChat();
 	}
 
-	// private void registerBountyCommands() {
-	// getCommand("bounty").setExecutor(bountiesCmdExe);
-	// getCommand("badd").setExecutor(bountiesCmdExe);
-	// getCommand("bdel").setExecutor(bountiesCmdExe);
-	// getCommand("blist").setExecutor(bountiesCmdExe);
-	// }
-	//
-	// private void registerDogTagCommands() {
-	// getCommand("dt").setExecutor(dogTagCmdExe);
-	// }
-	//
-	// private boolean setupEconomy() {
-	// RegisteredServiceProvider economyProvider = getServer()
-	// .getServicesManager().getRegistration(
-	// net / milkbowl / vault / economy / Economy);
-	// if (economyProvider != null)
-	// economy = (Economy) economyProvider.getProvider();
-	// return economy != null;
-	// }
-	//
+	private boolean setupEconomy() {
+		if (getServer().getPluginManager().getPlugin("Vault") == null) {
+			return false;
+		}
+		RegisteredServiceProvider<Economy> rsp = getServer()
+				.getServicesManager().getRegistration(Economy.class);
+		if (rsp == null) {
+			return false;
+		}
+		economy = rsp.getProvider();
+		return economy != null;
+	}
+	
+
+    private boolean setupChat() {
+        RegisteredServiceProvider<Chat> rsp = getServer().getServicesManager().getRegistration(Chat.class);
+        chat = rsp.getProvider();
+        return chat != null;
+    }
+
+	private boolean setupPermissions() {
+        RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
+        perms = rsp.getProvider();
+        return perms != null;
+    }
+	
 	public Economy getEconomy() {
 		return economy;
 	}
@@ -59,7 +77,9 @@ public class Wanted extends JavaPlugin {
 		return getServer().getPluginManager();
 	}
 
-	private Economy economy;
+	private Economy economy = null;
+	private Permission perms = null;
+	private Chat chat = null;
 
 	public static final String COMMAND_ADD = "add";
 

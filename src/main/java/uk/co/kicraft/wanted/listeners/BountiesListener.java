@@ -15,8 +15,12 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 import uk.co.kicraft.wanted.Wanted;
+import uk.co.kicraft.wanted.domain.Bounty;
+import uk.co.kicraft.wanted.service.BountiesService;
+import uk.co.kicraft.wanted.service.StatsService;
 
 // Referenced classes of package uk.co.kicraft.wanted.bounties:
 //            Bounties
@@ -24,114 +28,75 @@ import uk.co.kicraft.wanted.Wanted;
 public class BountiesListener implements Listener {
 
 	private Logger log = Logger.getLogger("Wanted");
+	private BountiesService bountiesService;
+	private StatsService statsService;
 
 	public BountiesListener(Wanted plugin) {
 		log = Logger.getLogger("Minecraft");
 		this.plugin = plugin;
 	}
 
-	//
-	// public void onPlayerLogin(PlayerJoinEvent event) {
-	// Player player = event.getPlayer();
-	// playerDao.saveFirstLogin(player);
-	// List active = plugin.getConfig().getConfigurationSection("bounties")
-	// .getStringList("active");
-	// for (Iterator iterator = active.iterator(); iterator.hasNext();) {
-	// String bounty = (String) iterator.next();
-	// String bountyInfo[] = bounty.split("-");
-	// if (player.getName().equalsIgnoreCase(bountyInfo[0])) {
-	// player.sendMessage((new StringBuilder(String
-	// .valueOf(Bounties.LOG_NAME)))
-	// .append("You currently have a bounty worth: ")
-	// .append(ChatColor.RED)
-	// .append(Bounties.getCurrency(plugin))
-	// .append(bountyInfo[1]).toString());
-	// break;
-	// }
-	// }
-	//
-	// }
-	//
-	public void onPlayerDeath(PlayerDeathEvent event) {
-		Player deadPlayer = event.getEntity();
+	public void onPlayerLogin(PlayerJoinEvent event) {
+		Player player = event.getPlayer();
 
+		Bounty bounty = bountiesService.getBounty(player.getName());
+
+		if (bounty.isActive()) {
+			// Output Bounty
+		}
+	}
+
+	public void onPlayerDeath(PlayerDeathEvent event) {
+
+		Player player = event.getEntity();
 		EntityDamageEvent lastDamageCause = event.getEntity()
 				.getLastDamageCause();
-		playerDao.saveDeath(deadPlayer, lastDamageCause.getCause());
+
+		statsService.saveDeath(event.getEntity().getName(), lastDamageCause
+				.getCause().toString(), null);
+
 		if (lastDamageCause instanceof EntityDamageByEntityEvent) {
 			DamageCause cause = lastDamageCause.getCause();
 			Entity damager = ((EntityDamageByEntityEvent) lastDamageCause)
 					.getDamager();
-			if (cause.equals(DamageCause.PROJECTILE))
+
+			if (cause.equals(DamageCause.PROJECTILE)) {
 				try {
 					damager = ((Projectile) damager).getShooter();
 				} catch (Exception ex) {
 					damager = ((EntityDamageByEntityEvent) lastDamageCause)
 							.getDamager();
-					log.info(damager.toString());
+					log.fine(damager.toString());
 				}
-			if (!(damager instanceof Player))
-				return;
-			Player killer = (Player) damager;
-			if (killer.equals(deadPlayer)) {
-				killer.sendMessage((new StringBuilder(String
-						.valueOf(Bounties.LOG_NAME))).append(
-						"You can't claim your own bounty, silly!").toString());
+			}
+
+			Player killer = null;
+			String killername = "";
+			if (damager instanceof Player) {
+				killer = ((Player) damager);
+				killername = killer.getName();
+			}
+
+			int deathId = statsService.saveDeath(player.getName(),
+					cause.name(), killer.getName());
+			if (((Player) damager).equals(player)) {
+				player.sendMessage("You can't claim your own bounty, silly!");
 				return;
 			}
-			if (hasBounty(deadPlayer)) {
-				handleBounty(killer, deadPlayer);
-				handleStats(killer, deadPlayer);
-				return;
+
+			Bounty bounty = bountiesService.getBounty(player.getName());
+
+			if (bounty.isActive() && killer != null) {
+				bountiesService.claimBounty(player.getName(), killer.getName(), deathId);
+				plugin.getEconomy().depositPlayer(killer.getName(), bounty.getAmmount());
+				plugin.getServer().broadcastMessage("player has claimed a bounty");
+				killer.sendMessage("You claimed a bounty!");
 			}
-			playerDao.saveKill(killer);
-			if (playerDao.getKills(killer) % 10 == 0) {
-				bountiesDao.addBounty(killer.getName(), 1000);
-				plugin.getServer().broadcastMessage(
-						Bounties.bountyAmount(killer.getName(), plugin));
-			}
+
 		}
+
 	}
 
-	//
-	// private void handleStats(Player killer, Player deadPlayer) {
-	// playerDao.saveDogTag(killer, deadPlayer);
-	// }
-	//
-	// private void handleBounty(Player killer, Player deadPlayer) {
-	// String bounty = bountiesDao.getBounty(deadPlayer.getName());
-	// int reward = (int) ((double) bountiesDao.getAmmount(bounty) *
-	// 0.90000000000000002D);
-	// int hunterTax = (int) ((double) bountiesDao.getAmmount(bounty) *
-	// 0.10000000000000001D);
-	// List results = new ArrayList();
-	// bountiesDao.removeBounty(deadPlayer.getName(), results);
-	// plugin.getEconomy().depositPlayer(killer.getName(), reward);
-	// bountiesDao.addBounty(killer.getName(), hunterTax);
-	// plugin.getServer().broadcastMessage(
-	// Bounties.announceKill(killer.getName(), deadPlayer.getName(),
-	// reward, plugin));
-	// killer.sendMessage((new StringBuilder(String.valueOf(Bounties.LOG_NAME)))
-	// .append("Your bounty has increased!").toString());
-	// }
-	//
-	// //
-	// private boolean hasBounty(Player p) {
-	// List active = plugin.getConfig().getConfigurationSection("bounties")
-	// .getStringList("active");
-	// for (Iterator iterator = active.iterator(); iterator.hasNext();) {
-	// String bounty = (String) iterator.next();
-	// String bountyInfo[] = bounty.split("-");
-	// if (p.getName().equalsIgnoreCase(bountyInfo[0]))
-	// return true;
-	// }
-	//
-	// return false;
-	// }
-
-	//
 	private Wanted plugin;
 
-	// private PlayerDao playerDao;
-	// private BountiesDao bountiesDao;
 }
