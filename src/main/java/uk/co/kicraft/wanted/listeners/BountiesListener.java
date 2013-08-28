@@ -71,10 +71,8 @@ public class BountiesListener implements Listener {
 			}
 
 			Player killer = null;
-			String killername = "";
 			if (damager instanceof Player) {
 				killer = ((Player) damager);
-				killername = killer.getName();
 			}
 
 			int deathId = statsService.saveDeath(player.getName(),

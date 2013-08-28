@@ -2,9 +2,12 @@ name: Wanted
 main: uk.co.kicraft.wanted.Wanted
 version: ${version}
 commands:
-  pos:
+  bountyadd:
     description: Displays your position or teleports you to another.
     usage: "Usage: '/pos' to get current position, or '/pos x y z' to teleport to x,y,z"
-  debug:
+  bountydel:
+    description: Toggles your debugging status for this plugin.
+    usage: /debug
+  bountylist:
     description: Toggles your debugging status for this plugin.
     usage: /debug

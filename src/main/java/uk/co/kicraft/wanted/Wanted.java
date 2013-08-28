@@ -11,6 +11,10 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import uk.co.kicraft.wanted.service.BountiesService;
+import uk.co.kicraft.wanted.service.BountiesServiceImpl;
+import uk.co.kicraft.wanted.service.StatsService;
+
 public class Wanted extends JavaPlugin {
 
 	private Logger log = Logger.getLogger("Wanted");
@@ -40,7 +44,11 @@ public class Wanted extends JavaPlugin {
 			return;
 		}
 		setupPermissions();
-        setupChat();
+		setupChat();
+	}
+
+	private void setupServices() {
+		bountiesService = new BountiesServiceImpl();
 	}
 
 	private boolean setupEconomy() {
@@ -55,20 +63,21 @@ public class Wanted extends JavaPlugin {
 		economy = rsp.getProvider();
 		return economy != null;
 	}
-	
 
-    private boolean setupChat() {
-        RegisteredServiceProvider<Chat> rsp = getServer().getServicesManager().getRegistration(Chat.class);
-        chat = rsp.getProvider();
-        return chat != null;
-    }
+	private boolean setupChat() {
+		RegisteredServiceProvider<Chat> rsp = getServer().getServicesManager()
+				.getRegistration(Chat.class);
+		chat = rsp.getProvider();
+		return chat != null;
+	}
 
 	private boolean setupPermissions() {
-        RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
-        perms = rsp.getProvider();
-        return perms != null;
-    }
-	
+		RegisteredServiceProvider<Permission> rsp = getServer()
+				.getServicesManager().getRegistration(Permission.class);
+		perms = rsp.getProvider();
+		return perms != null;
+	}
+
 	public Economy getEconomy() {
 		return economy;
 	}
@@ -80,6 +89,16 @@ public class Wanted extends JavaPlugin {
 	private Economy economy = null;
 	private Permission perms = null;
 	private Chat chat = null;
+	private BountiesService bountiesService = null;
+	private StatsService statsService = null;
+
+	public BountiesService getBountiesService() {
+		return bountiesService;
+	}
+
+	public StatsService getStatsService() {
+		return statsService;
+	}
 
 	public static final String COMMAND_ADD = "add";
 
