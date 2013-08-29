@@ -3,4 +3,4 @@ database:
   port: 1333
   user: bounties
   pass: bounties
-  prefix: bounties
+  name: bounties

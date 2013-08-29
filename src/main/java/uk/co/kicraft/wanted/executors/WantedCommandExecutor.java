@@ -1,5 +1,7 @@
 package uk.co.kicraft.wanted.executors;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -15,7 +17,7 @@ import uk.co.kicraft.wanted.service.BountiesService;
 public class WantedCommandExecutor implements CommandExecutor {
 
 	private BountiesService bountiesService;
-	
+
 	public WantedCommandExecutor(Wanted plugin) {
 		this.plugin = plugin;
 		this.bountiesService = plugin.getBountiesService();
@@ -34,7 +36,9 @@ public class WantedCommandExecutor implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {
 
-		Commands command = Commands.valueOf(cmd.getName());
+		System.out.print(cmd.getName());
+		
+		Commands command = Commands.getCommand(cmd.getName());
 		if (!sender.hasPermission(command.getPermission())) {
 			this.sendMessage(
 					sender,
@@ -42,124 +46,61 @@ public class WantedCommandExecutor implements CommandExecutor {
 							+ command.toString());
 			return true;
 		}
+		
+		String playerName = "";
+		int amount = 0;
+		
 
 		try {
 			switch (command) {
 			case ADD:
 				validateAddBounty(sender, args);
-				//bountiesService.addBounty(player, sponsor, amount);
+
+				amount = Integer.parseInt(args[1]);
+				playerName = args[0];
+				
+				String sponsorName = "";
+				if (sender instanceof Player) {
+					Player sponsor = (Player) sender;
+					sponsorName = sender.getName();
+					plugin.getEconomy().withdrawPlayer(sponsor.getName(),
+							amount);
+				} else {
+					sponsorName = "Console";
+				}
+
+				bountiesService.addBounty(playerName, sponsorName, amount);
+				sendMessage(sender, "Bounty Successfully Added!");
 				break;
+
 			case DELETE:
-
-				//bountiesService.removeBounty(player, ammount);
+				validateDeleteBounty(sender, args);
+				amount = Integer.parseInt(args[1]);
+				playerName = args[0];
+				bountiesService.removeBounty(playerName, amount);
+				sendMessage(sender, "Bounty Successfully Removed!");
 				break;
-			case LIST:
 
-				bountiesService.getBounties();
+			case LIST:
+				List<Bounty> bounties = bountiesService.getBounties();
+				sendMessage(sender, "Bounties");
+				for(Bounty bounty : bounties) {
+					sendMessage(sender, bounty.toString());
+				}
 				break;
 
 			default:
 
 				break;
 			}
+			return false;
 		} catch (ValidationException ex) {
 			this.sendMessage(sender, ex.getMessage());
 		}
 
-		return false;
+		return true;
 	}
 
-	// public boolean onCommand(CommandSender sender, Command cmd, String label,
-	// String args[]) {
-	// PluginManager pm = plugin.getPluginManager();
-	// ArrayList errors = new ArrayList();
-	// if (cmd.getName().equalsIgnoreCase("wanted")) {
-	// sender.sendMessage("Help");
-	// return true;
-	// }
-	// if (cmd.getName().equalsIgnoreCase("wadd")) {
-	// checkPermissions(sender, "bounty", errors);
-	// if (!errors.isEmpty()) {
-	// sendErrors(sender, errors);
-	// return true;
-	// }
-	// validateAddBounty(sender, args, errors);
-	// if (!errors.isEmpty()) {
-	// sendErrors(sender, errors);
-	// return true;
-	// }
-	// addBounty(sender, cmd, label, args, errors);
-	// if (!errors.isEmpty()) {
-	// sendErrors(sender, errors);
-	// return true;
-	// } else {
-	// sender.sendMessage("Bountey Added");
-	// sender.sendMessage("Bounty ammount");
-	// plugin.getServer().broadcastMessage("Broadcast bounty to everyone");
-	// return true;
-	// }
-	// }
-	// if (cmd.getName().equalsIgnoreCase("wdel")) {
-	// checkPermissions(sender, "bdel", errors);
-	// if (!errors.isEmpty()) {
-	// sendErrors(sender, errors);
-	// return true;
-	// }
-	// validateDelBounty(args, errors);
-	// if (!errors.isEmpty()) {
-	// sendErrors(sender, errors);
-	// return true;
-	// }
-	// deleteBounty(sender, cmd, label, args, errors);
-	// if (!errors.isEmpty()) {
-	// sendErrors(sender, errors);
-	// return true;
-	// } else {
-	// return true;
-	// }
-	// }
-	// if (cmd.getName().equalsIgnoreCase("wlist")) {
-	// checkPermissions(sender, "blist", errors);
-	// if (!errors.isEmpty()) {
-	// sendErrors(sender, errors);
-	// return true;
-	// }
-	// listBounty(sender, cmd, label, args, errors);
-	// if (!errors.isEmpty()) {
-	// sendErrors(sender, errors);
-	// return true;
-	// } else {
-	// return true;
-	// }
-	// } else {
-	// return false;
-	// }
-	// }
-	//
-	//
-	//
-	// private void checkPermissions(CommandSender sender, String cmd,
-	// ArrayList errors) {
-	// if (sender instanceof Player) {
-	// Player p = (Player) sender;
-	// if (cmd.equals("badd")) {
-	// if (!BountiesPermissionsChecker.hasAddPermissions(p))
-	// errors.add(Bounties.INVALID_PERMISSIONS);
-	// return;
-	// }
-	// if (cmd.equals("bdel")) {
-	// if (!BountiesPermissionsChecker.hasDelPermissions(p))
-	// errors.add(Bounties.INVALID_PERMISSIONS);
-	// return;
-	// }
-	// if (cmd.equals("blist")) {
-	// if (!BountiesPermissionsChecker.hasListPermissions(p))
-	// errors.add(Bounties.INVALID_PERMISSIONS);
-	// return;
-	// }
-	// }
-	// }
-	//
 	public void validateAddBounty(CommandSender sender, String args[])
 			throws ValidationException {
 		if (args.length != 2) {
@@ -200,68 +141,6 @@ public class WantedCommandExecutor implements CommandExecutor {
 		if (args.length == 2 && Integer.parseInt(args[1]) == 0)
 			throw new ValidationException("Invalid ammount specified");
 	}
-
-	//
-	// public synchronized void addBounty(CommandSender sender, Command cmd,
-	// String label, String args[], List errors) {
-	// boolean _tmp = sender instanceof Player;
-	// Player sponsor = (Player) sender;
-	// String playerName = args[0];
-	// int ammount = Integer.parseInt(args[1]);
-	// ammount = (int) ((double) ammount * 0.94999999999999996D);
-	// bountiesDao.addBounty(playerName, ammount);
-	// plugin.getEconomy().withdrawPlayer(sponsor.getName(), ammount);
-	// }
-	//
-	// private void listBounty(CommandSender sender, Command cmd, String label,
-	// String args[], List errors) {
-	// sender.sendMessage(bountiesDao.listBounties());
-	// }
-	//
-	// public void validateDelBounty(String args[], List errors) {
-	// if (args.length < 1 || args.length > 2)
-	// errors.add("Invalid arguments: /bdel <name> [<ammount>]");
-	// if (args.length == 2 && Integer.parseInt(args[1]) == 0)
-	// errors.add("Invalid ammount specified");
-	// }
-	//
-	// private synchronized void deleteBounty(CommandSender sender, Command cmd,
-	// String label, String args[], List errors) {
-	// String playerName = args[0];
-	// List results = new ArrayList();
-	// int ammount = args.length != 1 ? Integer.parseInt(args[1]) : 0;
-	// bountiesDao.removeBounty(playerName, ammount, results);
-	// sendResults(sender, results);
-	// }
-	//
-	//
-	// } else {
-	// String error;
-	// for (Iterator iterator = errors.iterator(); iterator.hasNext(); sender
-	// .sendMessage((new StringBuilder("Bounties")).append(error)
-	// .toString()))
-	// error = (String) iterator.next();
-	//
-	// }
-	// }
-	//
-	// private void sendResults(CommandSender sender, List results) {
-	// if (sender instanceof Player) {
-	// Player player = (Player) sender;
-	// for (Iterator iterator1 = results.iterator(); iterator1.hasNext();) {
-	// String result = (String) iterator1.next();
-	// if (player.isOnline())
-	// player.sendMessage(result);
-	// }
-	//
-	// } else {
-	// String result;
-	// for (Iterator iterator = results.iterator(); iterator.hasNext(); sender
-	// .sendMessage(result))
-	// result = (String) iterator.next();
-	//
-	// }
-	// }
 
 	public Wanted plugin;
 

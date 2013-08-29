@@ -1,16 +1,22 @@
 package uk.co.kicraft.wanted;
 
 import java.io.File;
+import java.sql.DriverManager;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.logging.Logger;
 
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import uk.co.kicraft.wanted.domain.DatabaseConnectionString;
+import uk.co.kicraft.wanted.executors.WantedCommandExecutor;
 import uk.co.kicraft.wanted.service.BountiesService;
 import uk.co.kicraft.wanted.service.BountiesServiceImpl;
 import uk.co.kicraft.wanted.service.StatsService;
@@ -45,6 +51,27 @@ public class Wanted extends JavaPlugin {
 		}
 		setupPermissions();
 		setupChat();
+		setupServices();
+		try {
+			setupDatabase(getConfig());
+		} catch (ClassNotFoundException e) {
+
+		}
+
+		wantedCommandExecutor = new WantedCommandExecutor(this);
+
+		getCommand(COMMAND_ADD).setExecutor(wantedCommandExecutor);
+		getCommand(COMMAND_DELETE).setExecutor(wantedCommandExecutor);
+		getCommand(COMMAND_LIST).setExecutor(wantedCommandExecutor);
+
+	}
+
+	private void setupDatabase(FileConfiguration config)
+			throws ClassNotFoundException {
+		Class.forName("com.mysql.jdbc.Driver");
+		databaseConfig = new DatabaseConnectionString(
+				config.getConfigurationSection("database"));
+
 	}
 
 	private void setupServices() {
@@ -86,12 +113,6 @@ public class Wanted extends JavaPlugin {
 		return getServer().getPluginManager();
 	}
 
-	private Economy economy = null;
-	private Permission perms = null;
-	private Chat chat = null;
-	private BountiesService bountiesService = null;
-	private StatsService statsService = null;
-
 	public BountiesService getBountiesService() {
 		return bountiesService;
 	}
@@ -100,6 +121,20 @@ public class Wanted extends JavaPlugin {
 		return statsService;
 	}
 
-	public static final String COMMAND_ADD = "add";
+	private Economy economy = null;
+	private Permission perms = null;
+	private Chat chat = null;
+	private BountiesService bountiesService = null;
+	private StatsService statsService = null;
+	private WantedCommandExecutor wantedCommandExecutor = null;
+	private static DatabaseConnectionString databaseConfig = null;
+
+	public static final String COMMAND_ADD = "bountyadd";
+	public static final String COMMAND_DELETE = "bountydel";
+	public static final String COMMAND_LIST = "bountylist";
+
+	public static Connection getConnection() throws SQLException {
+		return DriverManager.getConnection(databaseConfig.toString());
+	}
 
 }

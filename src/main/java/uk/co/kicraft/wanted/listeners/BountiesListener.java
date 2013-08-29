@@ -86,7 +86,7 @@ public class BountiesListener implements Listener {
 
 			if (bounty.isActive() && killer != null) {
 				bountiesService.claimBounty(player.getName(), killer.getName(), deathId);
-				plugin.getEconomy().depositPlayer(killer.getName(), bounty.getAmmount());
+				plugin.getEconomy().depositPlayer(killer.getName(), bounty.getAmount());
 				plugin.getServer().broadcastMessage("player has claimed a bounty");
 				killer.sendMessage("You claimed a bounty!");
 			}
