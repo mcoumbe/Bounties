@@ -2,11 +2,12 @@ package uk.co.kicraft.wanted.domain;
 
 public class Bounty {
 
+	private int id;
 	private String playerName;
 	private int amount;
-	
+
 	public boolean isActive() {
-		return amount>0;
+		return amount > 0;
 	}
 
 	public String getPlayerName() {
@@ -24,11 +25,17 @@ public class Bounty {
 	public void setAmount(int amount) {
 		this.amount = amount;
 	}
-	
+
 	public String toString() {
-		return playerName + " :  £" + amount; 
+		return playerName + " :  £" + amount;
 	}
-	
-	
-	
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 }
