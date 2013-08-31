@@ -12,7 +12,7 @@ import uk.co.kicraft.wanted.domain.Bounty;
 
 public class BountiesDao {
 
-	public List<Bounty> getBountys() {
+	public List<Bounty> getActiveBounties() {
 
 		List<Bounty> results = new ArrayList<Bounty>();
 		
@@ -51,6 +51,52 @@ public class BountiesDao {
 		return results;
 		
 	}
+	
+	/**
+	 * 
+	 * @return death_id
+	 */
+	public int insertDeath(String playerName, String cause) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		int deathId = 0;
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("INSERT INTO Death (player, cause)")
+		.append(" VALUES (?, ?)");
+		String sql = sb.toString();
+		
+		try {
+			conn = getConnection();
+			
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, playerName);
+			ps.setString(2, cause);
+			ps.executeQuery();
+			
+			rs = ps.getGeneratedKeys();
+			
+			if(rs.next()) {
+				deathId = rs.getInt(1);
+			}
+			
+		} catch (Exception ex) {
+			
+		}
+		
+		return deathId;
+		
+	}
+	
+	/**
+	 * INSERT INTO Death (player, cause)
+	 * VALUES (?, ?)
+	 * 
+	 * 
+	 * 
+	 */
 
 	private void close(Connection conn, PreparedStatement ps, ResultSet rs) {
 		try {
@@ -66,6 +112,10 @@ public class BountiesDao {
 		} catch (Exception ex) {
 
 		}
+	}
+	
+	private Connection getConnection() throws SQLException {
+		return Wanted.getConnection();
 	}
 
 }
