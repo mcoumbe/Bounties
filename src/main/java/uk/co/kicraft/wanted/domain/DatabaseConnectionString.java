@@ -21,7 +21,7 @@ public class DatabaseConnectionString {
 	@Override
 	public String toString() {
 		return "jdbc:mysql://" + host + ":" + port + "/" + database + "?user="
-				+ user + "&password=" + password;
+				+ user + "&pass=" + password;
 	}
 
 }

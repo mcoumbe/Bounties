@@ -14,6 +14,10 @@ public interface BountiesService {
 	
 	public List<Bounty> getBounties();
 
-	public void claimBounty(String player, String killer, int deathId);
+	public void claimBounty(int deathId, int bountyId);
+	
+	public int saveDeath(String player, String cause);
+	
+	public void updateDeath(String killer, int deathId);
 
 }

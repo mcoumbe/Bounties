@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -20,7 +21,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import uk.co.kicraft.wanted.Wanted;
 import uk.co.kicraft.wanted.domain.Bounty;
 import uk.co.kicraft.wanted.service.BountiesService;
-import uk.co.kicraft.wanted.service.StatsService;
 
 // Referenced classes of package uk.co.kicraft.wanted.bounties:
 //            Bounties
@@ -29,31 +29,38 @@ public class BountiesListener implements Listener {
 
 	private Logger log = Logger.getLogger("Wanted");
 	private BountiesService bountiesService;
-	private StatsService statsService;
 
 	public BountiesListener(Wanted plugin) {
 		log = Logger.getLogger("Minecraft");
 		this.plugin = plugin;
+		bountiesService = plugin.getBountiesService();
 	}
 
+	@EventHandler
 	public void onPlayerLogin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 
 		Bounty bounty = bountiesService.getBounty(player.getName());
 
 		if (bounty.isActive()) {
-			// Output Bounty
+			player.sendMessage("You have an Active Bounty of " + bounty.getAmount());
 		}
 	}
 
+	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
 
 		Player player = event.getEntity();
 		EntityDamageEvent lastDamageCause = event.getEntity()
 				.getLastDamageCause();
 
-		statsService.saveDeath(event.getEntity().getName(), lastDamageCause
-				.getCause().toString(), null);
+		if (lastDamageCause == null) {
+			return;
+		}
+
+		String damCause = lastDamageCause.getCause().toString();
+
+		int deathId = bountiesService.saveDeath(player.getName(), damCause);
 
 		if (lastDamageCause instanceof EntityDamageByEntityEvent) {
 			DamageCause cause = lastDamageCause.getCause();
@@ -73,10 +80,10 @@ public class BountiesListener implements Listener {
 			Player killer = null;
 			if (damager instanceof Player) {
 				killer = ((Player) damager);
+			} else {
+				return;
 			}
 
-			int deathId = statsService.saveDeath(player.getName(),
-					cause.name(), killer.getName());
 			if (((Player) damager).equals(player)) {
 				player.sendMessage("You can't claim your own bounty, silly!");
 				return;
@@ -84,11 +91,18 @@ public class BountiesListener implements Listener {
 
 			Bounty bounty = bountiesService.getBounty(player.getName());
 
-			if (bounty.isActive() && killer != null) {
-				bountiesService.claimBounty(player.getName(), killer.getName(), deathId);
-				plugin.getEconomy().depositPlayer(killer.getName(), bounty.getAmount());
-				plugin.getServer().broadcastMessage("player has claimed a bounty");
-				killer.sendMessage("You claimed a bounty!");
+			if (killer != null) {
+				bountiesService.updateDeath(killer.getName(), deathId);
+
+				if (bounty.isActive()) {
+						bountiesService.claimBounty(deathId, bounty.getId());
+						plugin.getEconomy().depositPlayer(killer.getName(),
+								bounty.getAmount());
+						plugin.getServer().broadcastMessage(
+								"player has claimed a bounty");
+						killer.sendMessage("You claimed a bounty!");
+				}
+
 			}
 
 		}

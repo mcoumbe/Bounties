@@ -1,9 +1,10 @@
 package uk.co.kicraft.wanted;
 
 import java.io.File;
-import java.sql.DriverManager;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.milkbowl.vault.chat.Chat;
@@ -17,16 +18,18 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import uk.co.kicraft.wanted.domain.DatabaseConnectionString;
 import uk.co.kicraft.wanted.executors.WantedCommandExecutor;
+import uk.co.kicraft.wanted.filters.DebugFilter;
+import uk.co.kicraft.wanted.filters.ProductionFilter;
+import uk.co.kicraft.wanted.listeners.BountiesListener;
 import uk.co.kicraft.wanted.service.BountiesService;
 import uk.co.kicraft.wanted.service.BountiesServiceImpl;
-import uk.co.kicraft.wanted.service.StatsService;
 
 public class Wanted extends JavaPlugin {
 
-	private Logger log = Logger.getLogger("Wanted");
+	private Logger log = Logger.getLogger(LOGGER_NAME);
 
 	public Wanted() {
-		log = Logger.getLogger("Minecraft");
+		log.setLevel(Level.INFO);
 		// economy = null;
 	}
 
@@ -52,6 +55,7 @@ public class Wanted extends JavaPlugin {
 		setupPermissions();
 		setupChat();
 		setupServices();
+		setupLogger(true);
 		try {
 			setupDatabase(getConfig());
 		} catch (ClassNotFoundException e) {
@@ -63,7 +67,16 @@ public class Wanted extends JavaPlugin {
 		getCommand(COMMAND_ADD).setExecutor(wantedCommandExecutor);
 		getCommand(COMMAND_DELETE).setExecutor(wantedCommandExecutor);
 		getCommand(COMMAND_LIST).setExecutor(wantedCommandExecutor);
+		
+		getPluginManager().registerEvents(new BountiesListener(this), this);
+	}
 
+	private void setupLogger(boolean debug) {
+		if(debug) {
+			log.setFilter(new DebugFilter());
+		} else {
+			log.setFilter(new ProductionFilter());
+		}
 	}
 
 	private void setupDatabase(FileConfiguration config)
@@ -117,24 +130,20 @@ public class Wanted extends JavaPlugin {
 		return bountiesService;
 	}
 
-	public StatsService getStatsService() {
-		return statsService;
-	}
-
 	private Economy economy = null;
 	private Permission perms = null;
 	private Chat chat = null;
 	private BountiesService bountiesService = null;
-	private StatsService statsService = null;
 	private WantedCommandExecutor wantedCommandExecutor = null;
 	private static DatabaseConnectionString databaseConfig = null;
 
 	public static final String COMMAND_ADD = "bountyadd";
 	public static final String COMMAND_DELETE = "bountydel";
 	public static final String COMMAND_LIST = "bountylist";
+	
+	public static final String LOGGER_NAME = "Wanted";
 
 	public static Connection getConnection() throws SQLException {
 		return DriverManager.getConnection(databaseConfig.toString());
 	}
-
 }

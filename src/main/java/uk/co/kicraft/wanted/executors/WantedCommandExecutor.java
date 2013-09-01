@@ -37,7 +37,7 @@ public class WantedCommandExecutor implements CommandExecutor {
 			String[] args) {
 
 		System.out.print(cmd.getName());
-		
+
 		Commands command = Commands.getCommand(cmd.getName());
 		if (!sender.hasPermission(command.getPermission())) {
 			this.sendMessage(
@@ -46,10 +46,9 @@ public class WantedCommandExecutor implements CommandExecutor {
 							+ command.toString());
 			return true;
 		}
-		
+
 		String playerName = "";
 		int amount = 0;
-		
 
 		try {
 			switch (command) {
@@ -57,8 +56,10 @@ public class WantedCommandExecutor implements CommandExecutor {
 				validateAddBounty(sender, args);
 
 				amount = Integer.parseInt(args[1]);
+				double fee = amount * 0.9;
+				amount = (int) fee;
 				playerName = args[0];
-				
+
 				String sponsorName = "";
 				if (sender instanceof Player) {
 					Player sponsor = (Player) sender;
@@ -83,9 +84,14 @@ public class WantedCommandExecutor implements CommandExecutor {
 
 			case LIST:
 				List<Bounty> bounties = bountiesService.getBounties();
-				sendMessage(sender, "Bounties");
-				for(Bounty bounty : bounties) {
-					sendMessage(sender, bounty.toString());
+				if (bounties.isEmpty()) {
+					sendMessage(sender, "No active bounties!");
+				} else {
+					sendMessage(sender, "Bounties");
+
+					for (Bounty bounty : bounties) {
+						sendMessage(sender, bounty.toString());
+					}
 				}
 				break;
 
@@ -93,12 +99,11 @@ public class WantedCommandExecutor implements CommandExecutor {
 
 				break;
 			}
-			return false;
+			return true;
 		} catch (ValidationException ex) {
 			this.sendMessage(sender, ex.getMessage());
+			return true;
 		}
-
-		return true;
 	}
 
 	public void validateAddBounty(CommandSender sender, String args[])

@@ -12,36 +12,48 @@ public class BountiesServiceImpl implements BountiesService {
 	public BountiesServiceImpl() {
 		this.bountiesDao = new BountiesDao();
 	}
-	
-	
+
 	@Override
-	public void addBounty(String player, String sponsor, int ammount) {
-		// TODO Auto-generated method stub
-		
+	public void addBounty(String player, String sponsor, int amount) {
+		Bounty b = bountiesDao.getBounty(player);		
+		if(b.isActive()) {
+			bountiesDao.updateBounty(sponsor, amount, b.getId());
+		} else {
+			int bountyId = bountiesDao.createBounty(player);
+			bountiesDao.updateBounty(sponsor, amount, bountyId);
+		}
 	}
 
 	@Override
-	public void removeBounty(String player, int ammount) {
-		// TODO Auto-generated method stub
+	public void removeBounty(String player, int amount) {
 		
 	}
 
 	@Override
 	public Bounty getBounty(String player) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void claimBounty(String player, String killer, int deathId) {
-		// TODO Auto-generated method stub
-		
+		return bountiesDao.getBounty(player);
 	}
 
 	@Override
 	public List<Bounty> getBounties() {
-		// TODO Auto-generated method stub
-		return null;
+		return bountiesDao.getActiveBounties();
 	}
 
+	@Override
+	public void claimBounty(int deathId, int bountyId) {
+		bountiesDao.endBounty(bountyId);
+		bountiesDao.addKill(bountyId, deathId);		
+	}
+
+	@Override
+	public int saveDeath(String player, String cause) {
+		return bountiesDao.saveDeath(player, cause);
+	}
+
+	@Override
+	public void updateDeath(String killer, int deathId) {
+		bountiesDao.updateDeath(killer, deathId);
+		
+	}
+	
 }
