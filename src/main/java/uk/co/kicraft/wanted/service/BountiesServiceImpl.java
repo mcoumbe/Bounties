@@ -2,8 +2,8 @@ package uk.co.kicraft.wanted.service;
 
 import java.util.List;
 
+import uk.co.kicraft.wanted.dao.BountiesDao;
 import uk.co.kicraft.wanted.domain.Bounty;
-import uk.co.kicraft.wanted.service.dao.BountiesDao;
 
 public class BountiesServiceImpl implements BountiesService {
 

@@ -77,6 +77,7 @@ public class Wanted extends JavaPlugin {
 		} else {
 			log.setFilter(new ProductionFilter());
 		}
+		
 	}
 
 	private void setupDatabase(FileConfiguration config)
@@ -142,6 +143,8 @@ public class Wanted extends JavaPlugin {
 	public static final String COMMAND_LIST = "bountylist";
 	
 	public static final String LOGGER_NAME = "Wanted";
+	
+	public static final String PLUGIN_NAME = "[KiWanted]";
 
 	public static Connection getConnection() throws SQLException {
 		return DriverManager.getConnection(databaseConfig.toString());

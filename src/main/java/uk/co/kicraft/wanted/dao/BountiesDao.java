@@ -1,4 +1,4 @@
-package uk.co.kicraft.wanted.service.dao;
+package uk.co.kicraft.wanted.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+
+import com.avaje.ebeaninternal.server.transaction.JdbcTransaction;
 
 import uk.co.kicraft.wanted.Wanted;
 import uk.co.kicraft.wanted.domain.Bounty;

@@ -1,7 +1,7 @@
 package uk.co.kicraft.wanted.test;
 
 import uk.co.kicraft.wanted.Wanted;
-import uk.co.kicraft.wanted.service.dao.BountiesDao;
+import uk.co.kicraft.wanted.dao.BountiesDao;
 
 public class ServiceTest {
 
