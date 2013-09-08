@@ -43,7 +43,8 @@ public class BountiesListener implements Listener {
 		Bounty bounty = bountiesService.getBounty(player.getName());
 
 		if (bounty.isActive()) {
-			player.sendMessage("You have an Active Bounty of " + bounty.getAmount());
+			player.sendMessage("You have an Active Bounty of "
+					+ bounty.getAmount());
 		}
 	}
 
@@ -95,12 +96,14 @@ public class BountiesListener implements Listener {
 				bountiesService.updateDeath(killer.getName(), deathId);
 
 				if (bounty.isActive()) {
-						bountiesService.claimBounty(deathId, bounty.getId());
-						plugin.getEconomy().depositPlayer(killer.getName(),
-								bounty.getAmount());
-						plugin.getServer().broadcastMessage(
-								"player has claimed a bounty");
-						killer.sendMessage("You claimed a bounty!");
+					bountiesService.claimBounty(deathId, bounty.getId());
+					plugin.getEconomy().depositPlayer(killer.getName(),
+							bounty.getAmount());
+					plugin.getServer().broadcastMessage(
+							Wanted.LOGGER_NAME + killer.getName()
+									+ " has claimed " + player.getName()
+									+ "'s Bounty!");
+					killer.sendMessage("You claimed a bounty!");
 				}
 
 			}

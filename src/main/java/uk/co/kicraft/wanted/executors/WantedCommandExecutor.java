@@ -24,6 +24,7 @@ public class WantedCommandExecutor implements CommandExecutor {
 	}
 
 	public void sendMessage(CommandSender sender, String msg) {
+		msg = Wanted.LOGGER_NAME + msg;
 		if (sender instanceof Player) {
 			if (((Player) sender).isOnline()) {
 				sender.sendMessage(msg);
@@ -72,6 +73,7 @@ public class WantedCommandExecutor implements CommandExecutor {
 
 				bountiesService.addBounty(playerName, sponsorName, amount);
 				sendMessage(sender, "Bounty Successfully Added!");
+				plugin.getServer().broadcastMessage(Wanted.LOGGER_NAME + playerName + "'s bounty has increased to: £" + bountiesService.getBounty(playerName).getAmount());
 				break;
 
 			case DELETE:
