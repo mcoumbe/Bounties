@@ -1,6 +1,0 @@
-database:
-  host: localhost
-  port: 1333
-  user: bounties
-  pass: bounties
-  name: bounties
