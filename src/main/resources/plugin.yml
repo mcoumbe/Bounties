@@ -1,0 +1,13 @@
+name: Wanted
+main: uk.co.kicraft.wanted.Wanted
+version: 0.1
+commands:
+  bountyadd:
+    description: Adds a bounty to a player
+    usage: "Usage: '/bountyadd <playername> <amount>'"
+  bountydel:
+    description: Deletes a players bounty
+    usage: "Usage: '/bountydel <playername> [<amount>]"
+  bountylist:
+    description: Lists active bounties
+    usage: "Usage: '/bountylist'"
