@@ -11,6 +11,7 @@ import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -67,17 +68,16 @@ public class Wanted extends JavaPlugin {
 		getCommand(COMMAND_ADD).setExecutor(wantedCommandExecutor);
 		getCommand(COMMAND_DELETE).setExecutor(wantedCommandExecutor);
 		getCommand(COMMAND_LIST).setExecutor(wantedCommandExecutor);
-		
+
 		getPluginManager().registerEvents(new BountiesListener(this), this);
 	}
 
 	private void setupLogger(boolean debug) {
-		if(debug) {
+		if (debug) {
 			log.setFilter(new DebugFilter());
 		} else {
 			log.setFilter(new ProductionFilter());
 		}
-		
 	}
 
 	private void setupDatabase(FileConfiguration config)
@@ -141,10 +141,9 @@ public class Wanted extends JavaPlugin {
 	public static final String COMMAND_ADD = "bountyadd";
 	public static final String COMMAND_DELETE = "bountydel";
 	public static final String COMMAND_LIST = "bountylist";
-	
-	public static final String LOGGER_NAME = "Wanted";
-	
-	public static final String PLUGIN_NAME = "[KiWanted]";
+
+	public static final String LOGGER_NAME = "[" + ChatColor.GREEN + "Wanted"
+			+ ChatColor.WHITE + "] ";
 
 	public static Connection getConnection() throws SQLException {
 		return DriverManager.getConnection(databaseConfig.toString());
