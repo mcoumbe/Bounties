@@ -4,6 +4,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,6 +13,7 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -24,6 +26,8 @@ import uk.co.kicraft.wanted.filters.ProductionFilter;
 import uk.co.kicraft.wanted.listeners.BountiesListener;
 import uk.co.kicraft.wanted.service.BountiesService;
 import uk.co.kicraft.wanted.service.BountiesServiceImpl;
+import uk.co.kicraft.wanted.service.WantedService;
+import uk.co.kicraft.wanted.tasks.PosterUpdater;
 
 public class Wanted extends JavaPlugin {
 
@@ -57,6 +61,7 @@ public class Wanted extends JavaPlugin {
 		setupChat();
 		setupServices();
 		setupLogger(true);
+		setupWantedSigns();
 		try {
 			setupDatabase(getConfig());
 		} catch (ClassNotFoundException e) {
@@ -70,6 +75,12 @@ public class Wanted extends JavaPlugin {
 		getCommand(COMMAND_LIST).setExecutor(wantedCommandExecutor);
 
 		getPluginManager().registerEvents(new BountiesListener(this), this);
+	}
+
+	private void setupWantedSigns() {
+		
+			
+				
 	}
 
 	private void setupLogger(boolean debug) {
@@ -134,7 +145,14 @@ public class Wanted extends JavaPlugin {
 	private Economy economy = null;
 	private Permission perms = null;
 	private Chat chat = null;
-	private BountiesService bountiesService = null;
+	
+	// Service Objects
+	private BountiesService bountiesService;
+	private WantedService wantedService;	
+	
+	// Scheduled Tasks
+	private PosterUpdater posterUpdater;
+			
 	private WantedCommandExecutor wantedCommandExecutor = null;
 	private static DatabaseConnectionString databaseConfig = null;
 

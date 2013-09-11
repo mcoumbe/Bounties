@@ -9,18 +9,20 @@ import org.bukkit.event.block.SignChangeEvent;
 import uk.co.kicraft.wanted.Wanted;
 import uk.co.kicraft.wanted.domain.Bounty;
 import uk.co.kicraft.wanted.service.BountiesService;
+import uk.co.kicraft.wanted.service.WantedService;
 
 public class WantedListener implements Listener {
 
 	private Logger log = Logger.getLogger("Wanted");
 	private BountiesService bountiesService;
+	private WantedService wantedService;
 	private Wanted plugin;
 
 	public WantedListener(Wanted plugin) {
 		log = Logger.getLogger("Minecraft");
 		this.plugin = plugin;
-		bountiesService = plugin.getBountiesService();
 	}	
+	
 	@EventHandler
 	public void onevent(SignChangeEvent event) {
 		
@@ -42,6 +44,7 @@ public class WantedListener implements Listener {
 						} else {
 							event.setLine(2, "No Bounty");
 						}
+						wantedService.saveSignLocation(event.getBlock().getLocation());
 					}
 					
 				} catch (Exception ex) {
