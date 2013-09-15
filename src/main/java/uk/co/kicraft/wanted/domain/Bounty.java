@@ -11,7 +11,11 @@ public class Bounty {
 	}
 
 	public String getPlayerName() {
-		return playerName;
+		if (isActive()) {
+			return playerName;
+		} else {
+			return "No Active Bounty";
+		}
 	}
 
 	public void setPlayerName(String playerName) {

@@ -20,13 +20,18 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import uk.co.kicraft.wanted.domain.DatabaseConnectionString;
-import uk.co.kicraft.wanted.executors.WantedCommandExecutor;
+import uk.co.kicraft.wanted.executors.BountiesCommandExecutor;
 import uk.co.kicraft.wanted.filters.DebugFilter;
 import uk.co.kicraft.wanted.filters.ProductionFilter;
 import uk.co.kicraft.wanted.listeners.BountiesListener;
+import uk.co.kicraft.wanted.listeners.WantedListener;
 import uk.co.kicraft.wanted.service.BountiesService;
 import uk.co.kicraft.wanted.service.BountiesServiceImpl;
 import uk.co.kicraft.wanted.service.WantedService;
+<<<<<<< HEAD
+=======
+import uk.co.kicraft.wanted.service.WantedServiceImpl;
+>>>>>>> Removed Spring
 import uk.co.kicraft.wanted.tasks.PosterUpdater;
 
 public class Wanted extends JavaPlugin {
@@ -57,24 +62,37 @@ public class Wanted extends JavaPlugin {
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
+
+		try {
+			setupDatabase(getConfig());
+		} catch (Exception ex) {
+
+		}
+
 		setupPermissions();
 		setupChat();
 		setupServices();
 		setupLogger(true);
+<<<<<<< HEAD
 		setupWantedSigns();
 		try {
 			setupDatabase(getConfig());
 		} catch (ClassNotFoundException e) {
+=======
+>>>>>>> Removed Spring
 
-		}
+		bountiesCommandExecutor = new BountiesCommandExecutor(this);
 
-		wantedCommandExecutor = new WantedCommandExecutor(this);
+		getCommand(COMMAND_ADD).setExecutor(bountiesCommandExecutor);
+		getCommand(COMMAND_DELETE).setExecutor(bountiesCommandExecutor);
+		getCommand(COMMAND_LIST).setExecutor(bountiesCommandExecutor);
 
-		getCommand(COMMAND_ADD).setExecutor(wantedCommandExecutor);
-		getCommand(COMMAND_DELETE).setExecutor(wantedCommandExecutor);
-		getCommand(COMMAND_LIST).setExecutor(wantedCommandExecutor);
+		PosterUpdater updater = new PosterUpdater();
+		updater.runTaskTimer(this, 1200, 1200);
 
 		getPluginManager().registerEvents(new BountiesListener(this), this);
+		getPluginManager().registerEvents(new WantedListener(), this);
+
 	}
 
 	private void setupWantedSigns() {
@@ -100,7 +118,11 @@ public class Wanted extends JavaPlugin {
 	}
 
 	private void setupServices() {
-		bountiesService = new BountiesServiceImpl();
+		ServiceRegister.registerService("wanted", new WantedServiceImpl());
+		ServiceRegister.registerService("bounties", new BountiesServiceImpl());
+		bountiesService = (BountiesService) ServiceRegister
+				.getService("bounties");
+		wantedService = (WantedService) ServiceRegister.getService("wanted");
 	}
 
 	private boolean setupEconomy() {
@@ -145,6 +167,7 @@ public class Wanted extends JavaPlugin {
 	private Economy economy = null;
 	private Permission perms = null;
 	private Chat chat = null;
+<<<<<<< HEAD
 	
 	// Service Objects
 	private BountiesService bountiesService;
@@ -154,6 +177,11 @@ public class Wanted extends JavaPlugin {
 	private PosterUpdater posterUpdater;
 			
 	private WantedCommandExecutor wantedCommandExecutor = null;
+=======
+	private BountiesService bountiesService = null;
+	private WantedService wantedService = null;
+	private BountiesCommandExecutor bountiesCommandExecutor = null;
+>>>>>>> Removed Spring
 	private static DatabaseConnectionString databaseConfig = null;
 
 	public static final String COMMAND_ADD = "bountyadd";

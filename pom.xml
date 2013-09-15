@@ -21,6 +21,7 @@
 	<dependencies>
 
 		<dependency>
+<<<<<<< HEAD
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 			<version>3.2.4.RELEASE</version>
@@ -33,6 +34,13 @@
 		</dependency>
 
 
+=======
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>
+
+>>>>>>> Removed Spring
 		<!-- Database Dependencies -->
 		<dependency>
 			<groupId>mysql</groupId>
@@ -76,10 +84,11 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.0</version>
 				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
+					<source>1.6</source>
+					<target>1.6</target>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+
 </project>

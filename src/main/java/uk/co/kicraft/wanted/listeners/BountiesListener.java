@@ -18,6 +18,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+import uk.co.kicraft.wanted.ServiceRegister;
 import uk.co.kicraft.wanted.Wanted;
 import uk.co.kicraft.wanted.domain.Bounty;
 import uk.co.kicraft.wanted.service.BountiesService;
@@ -33,7 +34,8 @@ public class BountiesListener implements Listener {
 	public BountiesListener(Wanted plugin) {
 		log = Logger.getLogger("Minecraft");
 		this.plugin = plugin;
-		bountiesService = plugin.getBountiesService();
+		bountiesService = (BountiesService) ServiceRegister
+				.getService("bounties");
 	}
 
 	@EventHandler
@@ -100,8 +102,8 @@ public class BountiesListener implements Listener {
 					plugin.getEconomy().depositPlayer(killer.getName(),
 							bounty.getAmount());
 					plugin.getServer().broadcastMessage(
-							Wanted.LOGGER_NAME + killer.getName()
-									+ " has claimed " + player.getName()
+							Wanted.LOGGER_NAME + killer.getDisplayName()
+									+ " has claimed " + player.getDisplayName()
 									+ "'s Bounty!");
 					killer.sendMessage("You claimed a bounty!");
 				}
