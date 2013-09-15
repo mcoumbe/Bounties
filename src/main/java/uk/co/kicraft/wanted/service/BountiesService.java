@@ -11,15 +11,9 @@ public interface BountiesService extends Service {
 	public void removeBounty(String player, int amount);
 
 	public Bounty getBounty(String player);
-<<<<<<< HEAD
-	
-	public Bounty getBounty(int ranking);
-	
-=======
 
 	public Bounty getBounty(int ranking);
 
->>>>>>> Removed Spring
 	public List<Bounty> getBounties();
 
 	public void claimBounty(int deathId, int bountyId);

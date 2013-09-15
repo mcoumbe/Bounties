@@ -4,7 +4,6 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,7 +12,6 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -21,6 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import uk.co.kicraft.wanted.domain.DatabaseConnectionString;
 import uk.co.kicraft.wanted.executors.BountiesCommandExecutor;
+import uk.co.kicraft.wanted.executors.WantedCommandExecutor;
 import uk.co.kicraft.wanted.filters.DebugFilter;
 import uk.co.kicraft.wanted.filters.ProductionFilter;
 import uk.co.kicraft.wanted.listeners.BountiesListener;
@@ -28,10 +27,7 @@ import uk.co.kicraft.wanted.listeners.WantedListener;
 import uk.co.kicraft.wanted.service.BountiesService;
 import uk.co.kicraft.wanted.service.BountiesServiceImpl;
 import uk.co.kicraft.wanted.service.WantedService;
-<<<<<<< HEAD
-=======
 import uk.co.kicraft.wanted.service.WantedServiceImpl;
->>>>>>> Removed Spring
 import uk.co.kicraft.wanted.tasks.PosterUpdater;
 
 public class Wanted extends JavaPlugin {
@@ -73,13 +69,12 @@ public class Wanted extends JavaPlugin {
 		setupChat();
 		setupServices();
 		setupLogger(true);
-<<<<<<< HEAD
 		setupWantedSigns();
 		try {
 			setupDatabase(getConfig());
 		} catch (ClassNotFoundException e) {
-=======
->>>>>>> Removed Spring
+
+		}
 
 		bountiesCommandExecutor = new BountiesCommandExecutor(this);
 
@@ -167,21 +162,13 @@ public class Wanted extends JavaPlugin {
 	private Economy economy = null;
 	private Permission perms = null;
 	private Chat chat = null;
-<<<<<<< HEAD
-	
-	// Service Objects
-	private BountiesService bountiesService;
-	private WantedService wantedService;	
-	
+		
 	// Scheduled Tasks
-	private PosterUpdater posterUpdater;
-			
+	private PosterUpdater posterUpdater;			
 	private WantedCommandExecutor wantedCommandExecutor = null;
-=======
 	private BountiesService bountiesService = null;
 	private WantedService wantedService = null;
 	private BountiesCommandExecutor bountiesCommandExecutor = null;
->>>>>>> Removed Spring
 	private static DatabaseConnectionString databaseConfig = null;
 
 	public static final String COMMAND_ADD = "bountyadd";

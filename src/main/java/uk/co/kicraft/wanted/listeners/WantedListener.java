@@ -1,6 +1,6 @@
 package uk.co.kicraft.wanted.listeners;
 
-<<<<<<< HEAD
+
 import java.util.logging.Logger;
 
 import org.bukkit.event.EventHandler;
@@ -9,7 +9,7 @@ import org.bukkit.event.block.SignChangeEvent;
 
 import uk.co.kicraft.wanted.Wanted;
 import uk.co.kicraft.wanted.domain.Bounty;
-=======
+
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,16 +19,14 @@ import org.bukkit.event.block.SignChangeEvent;
 import uk.co.kicraft.wanted.ServiceRegister;
 import uk.co.kicraft.wanted.domain.Bounty;
 import uk.co.kicraft.wanted.domain.WantedPoster;
->>>>>>> Removed Spring
+
 import uk.co.kicraft.wanted.service.BountiesService;
 import uk.co.kicraft.wanted.service.WantedService;
 
 public class WantedListener implements Listener {
 
-<<<<<<< HEAD
+
 	private Logger log = Logger.getLogger("Wanted");
-	private BountiesService bountiesService;
-	private WantedService wantedService;
 	private Wanted plugin;
 
 	public WantedListener(Wanted plugin) {
@@ -68,7 +66,7 @@ public class WantedListener implements Listener {
 		
 	}
 	
-=======
+
 	@EventHandler
 	public void onSignChange(SignChangeEvent event) {
 
@@ -100,5 +98,4 @@ public class WantedListener implements Listener {
 	private WantedService wantedService;
 	private BountiesService bountiesService;
 
->>>>>>> Removed Spring
 }

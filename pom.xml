@@ -21,26 +21,11 @@
 	<dependencies>
 
 		<dependency>
-<<<<<<< HEAD
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-			<version>3.2.4.RELEASE</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-jdbc</artifactId>
-			<version>3.2.4.RELEASE</version>
-		</dependency>
-
-
-=======
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
 		</dependency>
 
->>>>>>> Removed Spring
 		<!-- Database Dependencies -->
 		<dependency>
 			<groupId>mysql</groupId>

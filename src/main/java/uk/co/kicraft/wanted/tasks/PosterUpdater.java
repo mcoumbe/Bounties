@@ -1,19 +1,7 @@
 package uk.co.kicraft.wanted.tasks;
 
-<<<<<<< HEAD
+
 import org.bukkit.scheduler.BukkitRunnable;
-
-public class PosterUpdater extends BukkitRunnable {
-
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	
-
-=======
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -72,5 +60,5 @@ public class PosterUpdater extends BukkitRunnable {
 		}
 
 	}
->>>>>>> Removed Spring
+
 }
